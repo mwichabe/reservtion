@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580404524212",
+    "project_id": "amisadmin-f3854",
+    "storage_bucket": "amisadmin-f3854.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580404524212:android:7fa307acca3380b4f453e1",
+        "android_client_info": {
+          "package_name": "com.example.reservation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7YSrMMmzzNTlwriadw2kUoAEQUJx2T5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

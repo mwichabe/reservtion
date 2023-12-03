@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:reservation/pages/search.dart';
+
+import '../models/reserva<tion.dart';
 
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({
@@ -14,6 +18,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
   late DateTime selectedDate;
   late TimeOfDay selectedTime;
   int numberOfGuests = 2; // Default number of guests
+  //editing controllers
+  TextEditingController name = TextEditingController();
+  TextEditingController phone = TextEditingController();
+  TextEditingController email = TextEditingController();
 
   @override
   void initState() {
@@ -52,7 +60,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reservation Form'),
+        title: const Text('Reservation Form'),
         centerTitle: true,
       ),
       body: Padding(
@@ -60,14 +68,17 @@ class _ReservationScreenState extends State<ReservationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
+             TextField(
               decoration: InputDecoration(labelText: 'Name'),
+              controller: name
             ),
-            TextField(
+             TextField(
               decoration: InputDecoration(labelText: 'Phone'),
+              controller: phone
             ),
-            TextField(
+             TextField(
               decoration: InputDecoration(labelText: 'Email'),
+              controller: email
             ),
             Row(
               children: [
@@ -75,7 +86,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   child: InkWell(
                     onTap: () => _selectDate(context),
                     child: InputDecorator(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Date',
                       ),
                       child: Text(
@@ -84,12 +95,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   child: InkWell(
                     onTap: () => _selectTime(context),
                     child: InputDecorator(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Time',
                       ),
                       child: Text(
@@ -102,8 +113,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
             ),
             Row(
               children: [
-                Text('Number of Guests:'),
-                SizedBox(width: 10),
+                const Text('Number of Guests:'),
+                const SizedBox(width: 10),
                 DropdownButton<int>(
                   value: numberOfGuests,
                   onChanged: (value) {
@@ -120,22 +131,49 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                postReservationToFirestore();
                 // Implement reservation logic here
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SearchResultScreen(),
+                    builder: (context) =>  SearchResultScreen(name: name.text, phone: phone.text, email: email.text, numberOfGuests: numberOfGuests,),
                   ),
                 );
               },
-              child: Text('Search Tables'),
+              child: const Text('Search Tables'),
             ),
           ],
         ),
       ),
     );
   }
+  void postReservationToFirestore() async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Create a reservation object with the selected details
+      Reservation reservation = Reservation(
+        name: name.text,
+        phone: phone.text,
+        email: email.text,
+        date: selectedDate,
+        time: selectedTime,
+        numberOfGuests: numberOfGuests,
+      );
+
+      // Convert reservation object to a map
+      Map<String, dynamic> reservationMap = reservation.toMap();
+
+      // Add the reservation to Firestore
+      await firebaseFirestore.collection('reservations').add({
+        'userId': user.uid,
+        ...reservationMap,
+      });
+    }
+  }
+
 }

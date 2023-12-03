@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:reservation/pages/receiptScreen.dart';
 
 class SearchResultScreen extends StatefulWidget {
-  const SearchResultScreen({Key? key}) : super(key: key);
+  final String name;
+  final String phone;
+  final String email;
+  final int numberOfGuests;
+  const SearchResultScreen({Key? key, required this.name, required this.phone, required this.email, required this.numberOfGuests}) : super(key: key);
 
   @override
   _SearchResultScreenState createState() => _SearchResultScreenState();
@@ -16,7 +20,6 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
     8
   ]; // Replace with actual available tables
   List<int> selectedTables = [];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +87,7 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ReceiptScreen(
-                                    selectedTables: selectedTables,
+                                    selectedTables: selectedTables, name: widget.name, phone: widget.phone, email:widget.email, numberOfGuests: widget.numberOfGuests,
                                     // Pass other reservation details to the receipt screen
                                   ),
                                 ),

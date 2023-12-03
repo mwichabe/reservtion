@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,9 +6,16 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class ReceiptScreen extends StatelessWidget {
-  final List<int> selectedTables; // Pass other reservation details as needed
+  final List<int> selectedTables;
+  final String name;
+  final String phone;
+  final String email;
+  final int numberOfGuests;
 
-  const ReceiptScreen({Key? key, required this.selectedTables})
+
+
+
+  const ReceiptScreen({Key? key, required this.selectedTables, required this.name, required this.phone, required this.email, required this.numberOfGuests})
       : super(key: key);
 
   @override
@@ -18,6 +23,7 @@ class ReceiptScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reservation Receipt'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -25,56 +31,60 @@ class ReceiptScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Table(s) Reserved: ${selectedTables.join(", ")}',
+              'Reservation Receipt',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Table(s) Reserved:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            SizedBox(height: 8),
+            Text(
+              selectedTables.join(", "),
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
             SizedBox(height: 20),
-            // Add other reservation details here with appropriate styling
             Text(
               'Reservation Details:',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
             ),
             SizedBox(height: 8),
-            // Example details, replace with your actual reservation details
             Text('Date: ${DateTime.now().toLocal()}'),
-            Text('Guest Name: Your name'),
-            Text('Number of guests: 4'),
-
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Implement logic to go back to the home screen or navigate to a new reservation
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  ),
-                  child: const Text(
-                    'Back to Home',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                TextButton(
-                    onPressed: () async {
-                      await generateAndSavePDF(selectedTables);
-                    },
-                    child: Text('Download \n Receipt'))
-              ],
+            Text('Name: $name'),
+            Text('Number of Guests: $numberOfGuests'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Implement logic to go back to the home screen or navigate to a new reservation
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+              ),
+              child: const Text(
+                'Back to Home',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
           ],
         ),
       ),
     );
+
   }
 
   Future<void> generateAndSavePDF(List<int> selectedTables) async {
